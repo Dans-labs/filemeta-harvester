@@ -1,0 +1,38 @@
+[harvester]
+batch_size = 50
+
+[[endpoints]]
+id = "dans_phys_tech"
+name = "DANS Physical and Technical Sciences"
+oai_url = "https://phys-techsciences.datastations.nl/oai"
+metadata_prefix = "oai_dc"
+
+[[endpoints]]
+id = "dans_social"
+name = "DANS Social Sciences"
+oai_url = "https://ssh.datastations.nl/oai"
+metadata_prefix = "oai_dc"
+
+[[endpoints]]
+id = "dans_life_sciences"
+name = "DANS Life Sciences"
+oai_url = "https://lifesciences.datastations.nl/oai"
+metadata_prefix = "oai_dc"
+
+[[endpoints]]
+id = "dans_archaeology"
+name = "DANS Archaeology Data Station"
+oai_url = "https://archaeology.datastations.nl/oai"
+metadata_prefix = "oai_dc"
+
+[[endpoints]]
+id = "swissubase"
+name = "Swissubase"
+oai_url = "https://www.swissubase.ch/oai-pmh/v1/oai"
+metadata_prefix = "oai_dc"
+
+[[endpoints]]
+id = "srce_dabar"
+name = "SRCE Dabar"
+oai_url = "https://dabar.srce.hr/oai"
+metadata_prefix = "oai_dc"

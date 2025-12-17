@@ -1,0 +1,94 @@
+# =========================
+
+# Apache Airflow
+
+# =========================
+
+airflow.cfg
+airflow.db
+airflow.db-journal
+unittests.cfg
+
+# Airflow runtime directories
+
+logs/
+plugins/**pycache**/
+dags/**pycache**/
+
+# Local executor / celery artefacts
+
+celerybeat-schedule
+celerybeat.pid
+
+# =========================
+
+# Python
+
+# =========================
+
+**pycache**/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+
+.env
+.venv
+venv/
+ENV/
+
+# =========================
+
+# Packaging / build
+
+# =========================
+
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# =========================
+
+# Testing / coverage
+
+# =========================
+
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+
+# =========================
+
+# IDEs / editors
+
+# =========================
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+
+# OS-specific
+
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+
+# Secrets / local overrides
+
+# =========================
+
+.env.*
+!.env.example
+secrets/
+local_settings.py
+
