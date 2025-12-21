@@ -2,7 +2,7 @@ import filefetcher
 from datetime import datetime
 from airflow.decorators import task
 from oai.harvester import OAIHarvester 
-from db.filestore import FileRecord, FileRecordStore, create_pg_engine
+from db.filestore import FileRecord, FileRawRecord, FileRawRecordStore, FileRecordStore, create_pg_engine
 from db.pidstore import PIDStore
 from airflow.hooks.base import BaseHook
 
@@ -29,6 +29,9 @@ def initialize_file_db():
     file_store = FileRecordStore(create_pg_engine(pg_dsn))
     file_store.init_schema()
     print("File schema initialized.")
+    raw_file_store = FileRawRecordStore(create_pg_engine(pg_dsn))
+    raw_file_store.init_schema()
+    print("Raw File schema initialized.")
 
 @task 
 def check_endpoint(endpoint_url, name, prefix):
@@ -92,9 +95,23 @@ def process_pending_pids(endpoint_id):
     pending = store.get_pending_pids(endpoint_id)
     pg_dsn = f"postgresql://{db.login}:{db.password}@{db.host}:{db.port}/{db.schema}"
     file_store = FileRecordStore(create_pg_engine(pg_dsn))
+    raw_file_store = FileRawRecordStore(create_pg_engine(pg_dsn))
 
     for pid in pending:
         files = filefetcher.file_records(strip_pid(pid))
+        raw_files = filefetcher.file_raw_records(strip_pid(pid))
+        try:
+            raw_record = FileRawRecord(
+                dataset_pid=strip_pid(pid),
+                raw_metadata=raw_files,
+            )
+            raw_file_store.create(raw_record)
+        except Exception as e:
+            print(f"Error creating raw file record for PID {pid}: {e}")
+            store.mark_failed(endpoint_id, pid)
+            break
+            continue
+
         for f in files:
             try:
                 # print(f"Creating file record for PID {pid}: {f}")
@@ -117,6 +134,7 @@ def process_pending_pids(endpoint_id):
                 print(f"Error creating file record for PID {pid}: {e}")
                 store.mark_failed(endpoint_id, pid)
 
+        break
         store.mark_done(endpoint_id, pid)
     return len(pending)
 

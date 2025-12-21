@@ -23,6 +23,14 @@ class OAIHarvester:
         identity = self.sickle.Identify()
         return identity
 
+    def get_records(self, from_date: str = None, until_date: str = None):
+        records = self.sickle.ListRecords(**{
+            'metadataPrefix': self.prefix,
+            'from':from_date,
+            'until':until_date
+            })
+        return records
+
     def get_pid_list(self, from_date: str = None, until_date: str = None):
         """
         Get list of PIDs (and datestamps) from the OAI-PMH endpoint.
