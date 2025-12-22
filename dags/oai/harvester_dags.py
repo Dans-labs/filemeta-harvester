@@ -30,13 +30,13 @@ def make_oai_harvest_dag(endpoint: dict, batch_size: int) -> DAG:
         tags=["oai", "harvest"],
     ) as dag:
 
-        check_enfpoint_health = check_endpoint(ep["oai_url"], ep["name"], ep.get("metadata_prefix", "oai_dc"))
+        check_endpoint_health = check_endpoint(ep["oai_url"], ep["name"], ep.get("metadata_prefix", "oai_dc"))
         init_harvest_table = initialize_db()
         init_file_table = initialize_file_db()
         process_pending_records = process_pending_pids(ep["id"])
         fetch_pids_from_registry = fetch_pids(ep["oai_url"], ep["id"], ep["name"], ep.get("metadata_prefix", "oai_dc"))
         process_new_records = process_pending_pids(ep["id"])
-        check_enfpoint_health >> init_harvest_table >> init_file_table >> process_pending_records >> fetch_pids_from_registry >> process_new_records
+        check_endpoint_health >> init_harvest_table >> init_file_table >> process_pending_records >> fetch_pids_from_registry >> process_new_records
 
     return dag
 

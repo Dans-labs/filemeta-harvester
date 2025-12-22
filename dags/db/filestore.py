@@ -107,7 +107,7 @@ class FileRawRecordStore:
         SQLModel.metadata.create_all(self.engine)
         return True
 
-    def create(self, record: FileRecord) -> FileRawRecord:
+    def create_one(self, record: FileRawRecord) -> FileRawRecord:
         try:
             with Session(self.engine) as session:
                 session.add(record)
@@ -115,8 +115,18 @@ class FileRawRecordStore:
                 session.refresh(record)
                 return record
         except IntegrityError as e:
-                print(f"IntegrityError while creating FileRecord: {e}")
                 session.rollback()
+                raise
+    
+    def create_many(self, records: list[FileRawRecord]) -> list[FileRawRecord]:
+        try:
+            with Session(self.engine) as session:
+                session.add_all(records)
+                session.commit()
+                return records
+        except IntegrityError as e:
+            session.rollback()
+            raise
 
     def get_by_pid(self, dataset_pid: str) -> Optional[FileRawRecord]:
         with Session(self.engine) as session:
@@ -133,7 +143,7 @@ class FileRecordStore:
         SQLModel.metadata.create_all(self.engine)
         return True
 
-    def create(self, record: FileRecord) -> FileRecord:
+    def create_one(self, record: FileRecord) -> FileRecord:
         try:
             with Session(self.engine) as session:
                 session.add(record)
@@ -141,8 +151,18 @@ class FileRecordStore:
                 session.refresh(record)
                 return record
         except IntegrityError as e:
-                print(f"IntegrityError while creating FileRecord: {e}")
                 session.rollback()
+                raise
+
+    def create_many(self, records: list[FileRecord]) -> list[FileRecord]:
+        try:
+            with Session(self.engine) as session:
+                session.add_all(records)
+                session.commit()
+                return records
+        except IntegrityError as e:
+            session.rollback()
+            raise
 
     def get(self, file_id: int) -> Optional[FileRecord]:
         with Session(self.engine) as session:
