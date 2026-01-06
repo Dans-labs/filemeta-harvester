@@ -1,0 +1,17 @@
+[project]
+name = "filemeta_harvester"
+version = "0.1.0-dev"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "prefect>=3.6.9",
+    "filefetcher>=0.1.0.dev0",
+    "sickle>=0.7.0",
+    "sqlmodel>=0.0.31",
+    "psycopg>=3.3.2",
+    "psycopg2>=2.9.11",
+]
+[tool.uv.sources]
+filefetcher = { git = "https://github.com/dans-labs/filefetcher.git", rev = "master" }
+
