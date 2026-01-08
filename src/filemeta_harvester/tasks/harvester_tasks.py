@@ -1,31 +1,34 @@
 import filefetcher
+from prefect import task
 from datetime import datetime
-from airflow.decorators import task
-from oai.harvester import OAIHarvester 
-from db.filestore import FileRecord, FileRawRecord, FileRawRecordStore, FileRecordStore, create_pg_engine
-from db.pidstore import PIDStore
-from airflow.hooks.base import BaseHook
+from filemeta_harvester.oai.harvester import OAIHarvester 
+from filemeta_harvester.db.filestore import FileRecord, FileRawRecord, FileRawRecordStore, FileRecordStore, create_pg_engine
+from filemeta_harvester.db.pidstore import PIDStore
+from filemeta_harvester.config import load_config
+from time import sleep
 
-@task
+
+@task(log_prints=True)
 def initialize_db():
     """
     Initialize the PID store schema in the database.
     """
 
-    db = BaseHook.get_connection("harvester_db")
-    dsn = f"host={db.host} dbname={db.schema} user={db.login} password={db.password} port={db.port}"
+    db = load_config()
+
+    dsn = f"host={db.host} dbname={db.name} user={db.user} password={db.password} port={db.port}"
     store = PIDStore(dsn)
     store.init_schema()
     print("Harvest schema initialized.")
 
-@task
+@task(log_prints=True)
 def initialize_file_db():
     """
     Initialize the file record store schema in the database.
     """
 
-    db = BaseHook.get_connection("harvester_db")
-    pg_dsn = f"postgresql://{db.login}:{db.password}@{db.host}:{db.port}/{db.schema}"
+    db = load_config()
+    pg_dsn = f"postgresql://{db.user}:{db.password}@{db.host}:{db.port}/{db.name}"
     file_store = FileRecordStore(create_pg_engine(pg_dsn))
     file_store.init_schema()
     print("File schema initialized.")
@@ -33,7 +36,7 @@ def initialize_file_db():
     raw_file_store.init_schema()
     print("Raw File schema initialized.")
 
-@task 
+@task(log_prints=True)
 def check_endpoint(endpoint_url, name, prefix):
     """
     Check the health of the OAI-PMH endpoint by performing an Identify request.
@@ -44,14 +47,17 @@ def check_endpoint(endpoint_url, name, prefix):
     print(f"Identified endpoint '{name}': {identity}")
     return True
 
-@task
+@task(log_prints=True)
 def fetch_pids(endpoint_url, endpoint_id, name, prefix):
     """
     Fetch PIDs from the OAI-PMH endpoint starting from the last done timestamp.
     """
+    print(f"Fetching PIDs from endpoint '{name}' ({endpoint_url}) with prefix '{prefix}'")
+    # sleep(60)  # DEV
+    # return 
 
-    db = BaseHook.get_connection("harvester_db")
-    dsn = f"host={db.host} dbname={db.schema} user={db.login} password={db.password} port={db.port}"
+    db = load_config()
+    dsn = f"host={db.host} dbname={db.name} user={db.user} password={db.password} port={db.port}"
     store = PIDStore(dsn)
     last_done = store.get_most_recent_timestamp(endpoint_id)
     if last_done:
@@ -83,17 +89,19 @@ def strip_pid(pid):
             return pid[len(prefix):]
     return pid
 
-@task
+@task(log_prints=True)
 def process_pending_pids(endpoint_id):
     """
     Process pending PIDs: fetch file records and create file entries in the database.
     """
+    print(f"Processing pending PIDs for endpoint ID: {endpoint_id}")
+    # return # DEV
 
-    db = BaseHook.get_connection("harvester_db")
-    dsn = f"host={db.host} dbname={db.schema} user={db.login} password={db.password} port={db.port}"
+    db = load_config()
+    dsn = f"host={db.host} dbname={db.name} user={db.user} password={db.password} port={db.port}"
     store = PIDStore(dsn)
     pending = store.get_pending_pids(endpoint_id)
-    pg_dsn = f"postgresql://{db.login}:{db.password}@{db.host}:{db.port}/{db.schema}"
+    pg_dsn = f"postgresql://{db.user}:{db.password}@{db.host}:{db.port}/{db.name}"
     file_store = FileRecordStore(create_pg_engine(pg_dsn))
     raw_file_store = FileRawRecordStore(create_pg_engine(pg_dsn))
     failed_cnt = 0
