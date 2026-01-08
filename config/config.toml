@@ -1,7 +1,7 @@
 [database]
 host = "localhost"
 port = 5432
-name = "harvester"
+name = "admin"
 user = "harvester"
-password = "secret"
+password = "yoursecretsecret"
 

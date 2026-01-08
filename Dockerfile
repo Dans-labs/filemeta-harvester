@@ -1,10 +1,11 @@
-FROM apache/airflow:3.1.4
+FROM python:3.12
 
-RUN pip install --no-cache-dir \
-    git+https://github.com/dans-labs/datahugger.git@main \
-    git+https://github.com/dans-labs/filefetcher.git@master \
-    requests \
-    sickle \
-    psycopg[binary] \
-    sqlmodel
+WORKDIR /app
+
+COPY pyproject.toml ./
+COPY uv.lock ./
+RUN apt-get update && apt-get install -y git gcc libpq-dev
+RUN pip install uv && uv sync
+
+ENV PYTHONPATH=/app/src
 

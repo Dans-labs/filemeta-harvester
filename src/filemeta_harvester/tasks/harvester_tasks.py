@@ -5,6 +5,7 @@ from filemeta_harvester.oai.harvester import OAIHarvester
 from filemeta_harvester.db.filestore import FileRecord, FileRawRecord, FileRawRecordStore, FileRecordStore, create_pg_engine
 from filemeta_harvester.db.pidstore import PIDStore
 from filemeta_harvester.config import load_config
+from time import sleep
 
 
 @task(log_prints=True)
@@ -52,6 +53,7 @@ def fetch_pids(endpoint_url, endpoint_id, name, prefix):
     Fetch PIDs from the OAI-PMH endpoint starting from the last done timestamp.
     """
     print(f"Fetching PIDs from endpoint '{name}' ({endpoint_url}) with prefix '{prefix}'")
+    sleep(60)  # DEV
     return 
 
     db = load_config()
