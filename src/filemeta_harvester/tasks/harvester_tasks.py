@@ -53,8 +53,8 @@ def fetch_pids(endpoint_url, endpoint_id, name, prefix):
     Fetch PIDs from the OAI-PMH endpoint starting from the last done timestamp.
     """
     print(f"Fetching PIDs from endpoint '{name}' ({endpoint_url}) with prefix '{prefix}'")
-    sleep(60)  # DEV
-    return 
+    # sleep(60)  # DEV
+    # return 
 
     db = load_config()
     dsn = f"host={db.host} dbname={db.name} user={db.user} password={db.password} port={db.port}"
@@ -95,7 +95,7 @@ def process_pending_pids(endpoint_id):
     Process pending PIDs: fetch file records and create file entries in the database.
     """
     print(f"Processing pending PIDs for endpoint ID: {endpoint_id}")
-    return
+    # return # DEV
 
     db = load_config()
     dsn = f"host={db.host} dbname={db.name} user={db.user} password={db.password} port={db.port}"
