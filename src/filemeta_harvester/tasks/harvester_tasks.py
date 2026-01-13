@@ -1,5 +1,5 @@
 import filefetcher
-from prefect import task
+# from prefect import task
 from datetime import datetime
 from filemeta_harvester.oai.harvester import OAIHarvester 
 from filemeta_harvester.db.filestore import FileRecord, FileRawRecord, FileRawRecordStore, FileRecordStore, create_pg_engine
@@ -8,7 +8,7 @@ from filemeta_harvester.config import load_config
 from time import sleep
 
 
-@task(log_prints=True)
+# @task(log_prints=True)
 def initialize_db():
     """
     Initialize the PID store schema in the database.
@@ -21,7 +21,7 @@ def initialize_db():
     store.init_schema()
     print("Harvest schema initialized.")
 
-@task(log_prints=True)
+# @task(log_prints=True)
 def initialize_file_db():
     """
     Initialize the file record store schema in the database.
@@ -36,7 +36,7 @@ def initialize_file_db():
     raw_file_store.init_schema()
     print("Raw File schema initialized.")
 
-@task(log_prints=True)
+# @task(log_prints=True)
 def check_endpoint(endpoint_url, name, prefix):
     """
     Check the health of the OAI-PMH endpoint by performing an Identify request.
@@ -47,14 +47,14 @@ def check_endpoint(endpoint_url, name, prefix):
     print(f"Identified endpoint '{name}': {identity}")
     return True
 
-@task(log_prints=True)
+# @task(log_prints=True)
 def fetch_pids(endpoint_url, endpoint_id, name, prefix):
     """
     Fetch PIDs from the OAI-PMH endpoint starting from the last done timestamp.
     """
     print(f"Fetching PIDs from endpoint '{name}' ({endpoint_url}) with prefix '{prefix}'")
-    # sleep(60)  # DEV
-    # return 
+    sleep(60)  # DEV
+    return 
 
     db = load_config()
     dsn = f"host={db.host} dbname={db.name} user={db.user} password={db.password} port={db.port}"
@@ -89,13 +89,13 @@ def strip_pid(pid):
             return pid[len(prefix):]
     return pid
 
-@task(log_prints=True)
+# @task(log_prints=True)
 def process_pending_pids(endpoint_id):
     """
     Process pending PIDs: fetch file records and create file entries in the database.
     """
     print(f"Processing pending PIDs for endpoint ID: {endpoint_id}")
-    # return # DEV
+    return # DEV
 
     db = load_config()
     dsn = f"host={db.host} dbname={db.name} user={db.user} password={db.password} port={db.port}"
@@ -144,6 +144,6 @@ def process_pending_pids(endpoint_id):
         store.mark_done(endpoint_id, pid)
         done_cnt += 1
         # DEV
-        # break
+        break
     return {"done": done_cnt, "failed": failed_cnt}
 
