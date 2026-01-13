@@ -5,7 +5,6 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "prefect>=3.6.9",
     "filefetcher>=0.1.0.dev0",
     "sickle>=0.7.0",
     "sqlmodel>=0.0.31",

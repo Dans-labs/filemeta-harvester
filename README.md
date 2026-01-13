@@ -1,13 +1,17 @@
 # filemeta-harvester
 
-This uses Prefect workflow orchestration to run a file metadata harvester.
+A data harvester for file metadata.
 
-## Installation
+## Structure
 
-Use Docker to run a Postgres database to store harvesting data; A Prefect UI server to manage/display pipelines; A client with the filemeta-harvester pipline sources.
+- `src/filemeta_harvester/tasks` - Contains task definitions for harvesting file metadata.
+- `src/filemeta_harvester/flows` - Contains flow definitions for orchestrating pipelines.
+- `src/filemeta_harvester/db` - Contains database models and interactions.
+- `src/filemeta_harvester/oai` - Contains OAI-PMH protocol implementations.
+- `config/` - Configuration files for different environments.
+
+## Running with Docker Compose
 
 ```bash
 docker compose up
 ```
-
-Goto http://localhost:4200 to access the Prefect UI. Under deployments you should see the piplines for each repository endpoint.

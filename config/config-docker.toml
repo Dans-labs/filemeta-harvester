@@ -1,5 +1,5 @@
 [database]
-host = "postgres"
+host = "postgres-filemeta"
 port = 5432
 name = "admin"
 user = "harvester"

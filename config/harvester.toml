@@ -1,6 +1,3 @@
-[harvester]
-batch_size = 50
-
 [[endpoints]]
 id = "dans_phys_tech"
 name = "DANS Physical and Technical Sciences"
