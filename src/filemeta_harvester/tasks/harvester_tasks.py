@@ -4,11 +4,10 @@ from datetime import datetime
 from filemeta_harvester.oai.harvester import OAIHarvester 
 from filemeta_harvester.db.filestore import FileRecord, FileRawRecord, FileRawRecordStore, FileRecordStore, create_pg_engine
 from filemeta_harvester.db.pidstore import PIDStore
-from filemeta_harvester.config import load_config
-from time import sleep
+from filemeta_harvester.config import load_config, is_testing
 
-# set DEV=True to break out of the pipeline after harvesting one PID
-DEV=True
+# set testing to true in config/config-*.toml to break out of the pipeline after harvesting one PID
+DEV=is_testing()
 
 
 # @task(log_prints=True)
@@ -144,6 +143,7 @@ def process_pending_pids(endpoint_id):
         store.mark_done(endpoint_id, pid)
         done_cnt += 1
         if DEV:
+            print("Warning testing = true; breaking out of loop!")
             break
     return {"done": done_cnt, "failed": failed_cnt}
 

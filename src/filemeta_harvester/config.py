@@ -10,13 +10,28 @@ class DatabaseConfig:
     password: str
     name: str
 
+data = None
+def  is_testing(path: Path | None = None) -> bool:
+    global data
+    if not data:
+        path = path or Path(__file__).parent.parent.parent / "config/config.toml"
+
+        with path.open("rb") as f:
+            data = tomllib.load(f)
+    
+    dev = data['dev']
+    return dev['testing']
+        
+
 
 def load_config(path: Path | None = None) -> DatabaseConfig:
-    # path = path or Path(__file__).parent / "config/config.toml"
-    path = path or Path(__file__).parent.parent.parent / "config/config.toml"
+    global data
+    if not data:
+        # path = path or Path(__file__).parent / "config/config.toml"
+        path = path or Path(__file__).parent.parent.parent / "config/config.toml"
 
-    with path.open("rb") as f:
-        data = tomllib.load(f)
+        with path.open("rb") as f:
+            data = tomllib.load(f)
 
     db = data["database"]
     return DatabaseConfig(

@@ -1,3 +1,6 @@
+[dev]
+testing=true
+
 [database]
 host = "postgres-filemeta"
 port = 5432
