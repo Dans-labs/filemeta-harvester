@@ -7,6 +7,9 @@ from filemeta_harvester.db.pidstore import PIDStore
 from filemeta_harvester.config import load_config
 from time import sleep
 
+# set DEV=True to break out of the pipeline after harvesting one PID
+DEV=True
+
 
 # @task(log_prints=True)
 def initialize_db():
@@ -32,9 +35,9 @@ def initialize_file_db():
     file_store = FileRecordStore(create_pg_engine(pg_dsn))
     file_store.init_schema()
     print("File schema initialized.")
-    raw_file_store = FileRawRecordStore(create_pg_engine(pg_dsn))
-    raw_file_store.init_schema()
-    print("Raw File schema initialized.")
+    # raw_file_store = FileRawRecordStore(create_pg_engine(pg_dsn))
+    # raw_file_store.init_schema()
+    # print("Raw File schema initialized.")
 
 # @task(log_prints=True)
 def check_endpoint(endpoint_url, name, prefix):
@@ -53,8 +56,6 @@ def fetch_pids(endpoint_url, endpoint_id, name, prefix):
     Fetch PIDs from the OAI-PMH endpoint starting from the last done timestamp.
     """
     print(f"Fetching PIDs from endpoint '{name}' ({endpoint_url}) with prefix '{prefix}'")
-    sleep(60)  # DEV
-    return 
 
     db = load_config()
     dsn = f"host={db.host} dbname={db.name} user={db.user} password={db.password} port={db.port}"
@@ -95,7 +96,6 @@ def process_pending_pids(endpoint_id):
     Process pending PIDs: fetch file records and create file entries in the database.
     """
     print(f"Processing pending PIDs for endpoint ID: {endpoint_id}")
-    return # DEV
 
     db = load_config()
     dsn = f"host={db.host} dbname={db.name} user={db.user} password={db.password} port={db.port}"
@@ -103,19 +103,19 @@ def process_pending_pids(endpoint_id):
     pending = store.get_pending_pids(endpoint_id)
     pg_dsn = f"postgresql://{db.user}:{db.password}@{db.host}:{db.port}/{db.name}"
     file_store = FileRecordStore(create_pg_engine(pg_dsn))
-    raw_file_store = FileRawRecordStore(create_pg_engine(pg_dsn))
+    # raw_file_store = FileRawRecordStore(create_pg_engine(pg_dsn))
     failed_cnt = 0
     done_cnt = 0
 
     for pid in pending:
         try:
             files = filefetcher.file_records(strip_pid(pid))
-            raw_files = filefetcher.file_raw_records(strip_pid(pid))
-            raw_record = FileRawRecord(
-                dataset_pid=strip_pid(pid),
-                raw_metadata=raw_files,
-            )
-            raw_file_store.create_one(raw_record)
+            # raw_files = filefetcher.file_raw_records(strip_pid(pid))
+            # raw_record = FileRawRecord(
+            #     dataset_pid=strip_pid(pid),
+            #     raw_metadata=raw_files,
+            # )
+            # raw_file_store.create_one(raw_record)
             record_list = []
             for f in files:
                 record = FileRecord(
@@ -143,7 +143,7 @@ def process_pending_pids(endpoint_id):
 
         store.mark_done(endpoint_id, pid)
         done_cnt += 1
-        # DEV
-        break
+        if DEV:
+            break
     return {"done": done_cnt, "failed": failed_cnt}
 

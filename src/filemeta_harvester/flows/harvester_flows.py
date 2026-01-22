@@ -16,10 +16,14 @@ def generate_timestamp():
 def filemeta_harvest_flow(endpoint: dict):
     print(f"Starting harvest flow for endpoint: {endpoint['name']}")
     check_endpoint(endpoint["oai_url"], endpoint["name"], endpoint.get("metadata_prefix", "oai_dc"))
+    print("Intialize db tables.")
     initialize_db()
     initialize_file_db()
+    print("Processing pending records before fetching new ones.")
     process_pending_pids(endpoint['id'])
+    print(f"Fetching new PID records for {endpoint['name']}")
     fetch_pids(endpoint['oai_url'], endpoint['id'], endpoint['name'], endpoint.get('metadata_prefix', 'oai_dc'))
+    print("Processing PIDs...")
     process_pending_pids(endpoint['id'])
 
 
